@@ -1,0 +1,46 @@
+name: Build
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-arm64:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK (needed by some NDK tools)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android NDK
+        id: setup-ndk
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r27b
+
+      - name: Configure CMake for Android arm64
+        run: |
+          cmake -S . -B build-arm64 \
+            -DANDROID_ABI=arm64-v8a \
+            -DANDROID_PLATFORM=android-26 \
+            -DANDROID_NDK=${{ steps.setup-ndk.outputs.ndk-path }} \
+            -DCMAKE_TOOLCHAIN_FILE=${{ steps.setup-ndk.outputs.ndk-path }}/build/cmake/android.toolchain.cmake \
+            -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build preloader
+        run: cmake --build build-arm64 --config Release -j$(nproc)
+
+      - name: Upload libpreloader.so
+        uses: actions/upload-artifact@v4
+        with:
+          name: preloader-arm64
+          path: build-arm64/**/*.so
