@@ -58,8 +58,7 @@ void addAssetOverride(JNIEnv *env, const char* path) {
    jmethodID methodId = env->GetStaticMethodID(clazz, "addAssetOverride", "(Landroid/content/res/AssetManager;Ljava/lang/String;)V");
    if (!methodId) return;
    
-   std::string s(1, path);
-   jstring str = env->NewStringUTF(s.c_str());
+   jstring str = env->NewStringUTF(path);
 
    env->CallStaticVoidMethod(clazz, methodId, assets_manager, str);
    env->DeleteLocalRef(str);
