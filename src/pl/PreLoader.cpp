@@ -42,10 +42,6 @@ bool pl_is_loaded() {
     return g_isLoaded;
 }
 
-void addAssetOverride(JNIEnv *env, const std::string path) {
-    return addAssetOverride(env, path.c_str());
-}
-
 void addAssetOverride(JNIEnv *env, const char* path) {
   jobject appContext = AndroidUtils::GetGlobalContext(env);
   if (!appContext) return;

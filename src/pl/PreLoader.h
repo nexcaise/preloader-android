@@ -5,9 +5,8 @@
 extern "C" {
 #endif
 
-void addAssetOverride(JNIEnv *env, const std::string path);
-
 void addAssetOverride(JNIEnv *env, const char* path);
+
 #ifdef __cplusplus
 }
 #endif
