@@ -42,6 +42,37 @@ bool pl_is_loaded() {
     return g_isLoaded;
 }
 
+void addAssetOverride(JNIEnv *env, const std::string path) {
+    return addAssetOverride(env, path.c_str());
+}
+
+void addAssetOverride(JNIEnv *env, const char* path) {
+  jobject appContext = AndroidUtils::GetGlobalContext(env);
+  if (!appContext) return;
+
+  jclass contextClass = env->GetObjectClass(appContext);
+  jmethodID get_assets = env->GetMethodID(contextClass, "getAssets", "()Landroid/content/res/AssetManager;");
+  jobject assets_manager = env->CallObjectMethod(appContext, get_assets);
+  
+  if(!assets_manager) return;
+  
+  jclass clazz = env->FindClass("id/my/nexcaise/ncmodloader/Utils");
+   if (!clazz) return;
+
+   jmethodID methodId = env->GetStaticMethodID(clazz, "addAssetOverride", "(Landroid/content/res/AssetManager;Ljava/lang/String;)V");
+   if (!methodId) return;
+   
+   std::string s(1, path);
+   jstring str = env->NewStringUTF(s.c_str());
+
+   env->CallStaticVoidMethod(clazz, methodId, assets_manager, str);
+   env->DeleteLocalRef(str);
+   env->DeleteLocalRef(assets_manager);
+   
+   env->DeleteLocalRef(contextClass);
+   env->DeleteLocalRef(appContext);
+}
+
 JNIEXPORT void ANativeActivity_onCreate(ANativeActivity* activity, void* savedState, size_t savedStateSize) {
     if (onCreate) {
         onCreate(activity, savedState, savedStateSize);
