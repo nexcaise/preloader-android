@@ -42,32 +42,6 @@ bool pl_is_loaded() {
     return g_isLoaded;
 }
 
-void addAssetOverride(JNIEnv *env, const char* path) {
-  jobject appContext = AndroidUtils::GetGlobalContext(env);
-  if (!appContext) return;
-
-  jclass contextClass = env->GetObjectClass(appContext);
-  jmethodID get_assets = env->GetMethodID(contextClass, "getAssets", "()Landroid/content/res/AssetManager;");
-  jobject assets_manager = env->CallObjectMethod(appContext, get_assets);
-  
-  if(!assets_manager) return;
-  
-  jclass clazz = env->FindClass("id/my/nexcaise/ncmodloader/Utils");
-   if (!clazz) return;
-
-   jmethodID methodId = env->GetStaticMethodID(clazz, "addAssetOverride", "(Landroid/content/res/AssetManager;Ljava/lang/String;)V");
-   if (!methodId) return;
-   
-   jstring str = env->NewStringUTF(path);
-
-   env->CallStaticVoidMethod(clazz, methodId, assets_manager, str);
-   env->DeleteLocalRef(str);
-   env->DeleteLocalRef(assets_manager);
-   
-   env->DeleteLocalRef(contextClass);
-   env->DeleteLocalRef(appContext);
-}
-
 JNIEXPORT void ANativeActivity_onCreate(ANativeActivity* activity, void* savedState, size_t savedStateSize) {
     if (onCreate) {
         onCreate(activity, savedState, savedStateSize);
@@ -146,6 +120,17 @@ Java_org_levimc_launcher_core_minecraft_MinecraftLauncher_nativeOnLauncherLoaded
 
 
     Java_org_levimc_launcher_core_minecraft_MinecraftActivity_nativeOnLauncherLoaded(env, thiz, libPath);
+}
+
+JNIEXPORT void JNICALL
+Java_org_levimc_launcher_core_mods_ModNativeLoader_LoadMod(JNIEnv *env, jclass cls, jstring jStr, jint index) {
+    const char* libPath = env->GetStringUTFChars(jStr, nullptr);
+    if (libPath == nullptr || !g_vm) {
+        return;
+    }
+    
+    ModManager::LoadMod(g_vm, libPath, index);
+    env->ReleaseStringUTFChars(jStr, libPath);
 }
 
 }

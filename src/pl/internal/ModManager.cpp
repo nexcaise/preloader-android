@@ -58,11 +58,23 @@ void ModManager::LoadAndInitializeEnabledMods(const std::string &modsDir,
     if (!IsModEnabled(configPath, libName))
       continue;
     fs::path destPath = fs::path(dataDir) / "mods" / entry.path().filename();
-    if (void *handle = dlopen(destPath.c_str(), RTLD_NOW)) {
-      LoadFunc func = (LoadFunc)dlsym(handle, "LeviMod_Load");
+    LoadMod(vm, destPath.c_str());
+  }
+}
+
+void ModManager::LoadMod(JavaVM* vm, const char* path, int index) {
+    const char* options[] = {"LeviMod_Load", "LeviMod_LoadBefore", "LeviMod_LoadAfter"};
+    const char* type = nullptr;
+    if (index >= 1 && index <= 2) {
+        type = options[index];
+    } else {
+        type = options[index];
+    }
+    
+    if (void *handle = dlopen(path, RTLD_NOW)) {
+      LoadFunc func = (LoadFunc)dlsym(handle, type);
       if (func) {
         func(vm);
       }
     }
-  }
 }
