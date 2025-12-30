@@ -49,7 +49,7 @@ std::string AndroidUtils::GetAbsolutePath(JNIEnv *env, jobject file) {
 
 jobject AndroidUtils::getCurrentActivity(JNIEnv *env) {
     jclass MinecraftActivityState = env->FindClass("org/levimc/launcher/core/minecraft/MinecraftActivityState");
-  if (!MinecraftActivityState) return "";
+  if (!MinecraftActivityState) return nullptr;
   jmethodID getCurrentActivityMethod = env->GetStaticMethodID(MinecraftActivityState, "getCurrentActivity","()Landroid/app/Activity;");
   if (!getCurrentActivityMethod) {
     env->DeleteLocalRef(MinecraftActivityState);
