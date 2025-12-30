@@ -48,21 +48,34 @@ std::string AndroidUtils::GetAbsolutePath(JNIEnv *env, jobject file) {
 }
 
 jobject AndroidUtils::getCurrentActivity(JNIEnv *env) {
-    jclass MinecraftActivityState = env->FindClass("org/levimc/launcher/core/minecraft/MinecraftActivityState");
-  if (!MinecraftActivityState) return nullptr;
-  jmethodID getCurrentActivityMethod = env->GetStaticMethodID(MinecraftActivityState, "getCurrentActivity","()Landroid/app/Activity;");
-  if (!getCurrentActivityMethod) {
-    env->DeleteLocalRef(MinecraftActivityState);
-    return nullptr;
-  }
-  jobject mcActivity = env->CallStaticObjectMethod(MinecraftActivityState, getCurrentActivityMethod);
-  if (!mcActivity) {
-    env->DeleteLocalRef(MinecraftActivityState);
-    return nullptr;
-  }
-  env->DeleteLocalRef(mcActivity);
-  env->DeleteLocalRef(MinecraftActivityState);
-  return mcActivity;
+    jclass cls = env->FindClass(
+        "org/levimc/launcher/core/minecraft/MinecraftActivityState"
+    );
+    if (!cls) return nullptr;
+
+    jmethodID mid = env->GetStaticMethodID(
+        cls,
+        "getCurrentActivity",
+        "()Landroid/app/Activity;"
+    );
+    if (!mid) {
+        env->DeleteLocalRef(cls);
+        return nullptr;
+    }
+
+    jobject localAct = env->CallStaticObjectMethod(cls, mid);
+    if (env->ExceptionCheck() || !localAct) {
+        env->ExceptionClear();
+        env->DeleteLocalRef(cls);
+        return nullptr;
+    }
+
+    jobject globalAct = env->NewGlobalRef(localAct);
+
+    env->DeleteLocalRef(localAct);
+    env->DeleteLocalRef(cls);
+
+    return globalAct;
 }
 
 std::string AndroidUtils::GetSelectedModsDir(JNIEnv *env, jobject context) {
