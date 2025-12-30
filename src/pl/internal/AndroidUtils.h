@@ -10,7 +10,7 @@ struct AndroidContextPaths {
 namespace AndroidUtils {
 jobject GetGlobalContext(JNIEnv *env);
 std::string GetAbsolutePath(JNIEnv *env, jobject fileObj);
-jobject AndroidUtils::getCurrentActivity(JNIEnv *env);
+jobject getCurrentActivity(JNIEnv *env);
 std::string GetSelectedModsDir(JNIEnv *env, jobject context);
 AndroidContextPaths FetchContextPaths(JNIEnv *env);
 } // namespace AndroidUtils
