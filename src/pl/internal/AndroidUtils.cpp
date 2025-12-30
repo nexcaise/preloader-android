@@ -47,6 +47,24 @@ std::string AndroidUtils::GetAbsolutePath(JNIEnv *env, jobject file) {
   return result;
 }
 
+jobject AndroidUtils::getCurrentActivity(JNIEnv *env) {
+    jclass MinecraftActivityState = env->FindClass("org/levimc/launcher/core/minecraft/MinecraftActivityState");
+  if (!MinecraftActivityState) return "";
+  jmethodID getCurrentActivityMethod = env->GetStaticMethodID(MinecraftActivityState, "getCurrentActivity","()Landroid/app/Activity;");
+  if (!getCurrentActivityMethod) {
+    env->DeleteLocalRef(MinecraftActivityState);
+    return nullptr;
+  }
+  jobject mcActivity = env->CallStaticObjectMethod(MinecraftActivityState, getCurrentActivityMethod);
+  if (!mcActivity) {
+    env->DeleteLocalRef(MinecraftActivityState);
+    return nullptr;
+  }
+  env->DeleteLocalRef(mcActivity);
+  env->DeleteLocalRef(MinecraftActivityState);
+  return mcActivity;
+}
+
 std::string AndroidUtils::GetSelectedModsDir(JNIEnv *env, jobject context) {
   jclass versionManagerClass =
       env->FindClass("org/levimc/launcher/core/versions/VersionManager");
