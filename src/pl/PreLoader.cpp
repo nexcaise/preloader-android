@@ -26,22 +26,6 @@ static void (*androidMain)(struct android_app*) = nullptr;
 
 extern "C" {
 
-const char* pl_get_mods_dir() {
-    return g_modsDir.empty() ? nullptr : g_modsDir.c_str();
-}
-
-const char* pl_get_cache_dir() {
-    return g_cacheDir.empty() ? nullptr : g_cacheDir.c_str();
-}
-
-const char* pl_get_minecraft_data_dir() {
-    return g_externalFilesDir.empty() ? nullptr : g_externalFilesDir.c_str();
-}
-
-bool pl_is_loaded() {
-    return g_isLoaded;
-}
-
 JNIEXPORT void ANativeActivity_onCreate(ANativeActivity* activity, void* savedState, size_t savedStateSize) {
     if (onCreate) {
         onCreate(activity, savedState, savedStateSize);
@@ -80,10 +64,11 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 }
 
 JNIEXPORT void JNICALL
-Java_org_levimc_launcher_core_minecraft_MinecraftActivity_nativeOnLauncherLoaded(
+Java_org_levimc_launcher_core_mods_ModNativeLoader_loadMods(
         JNIEnv* env,
-        jobject thiz,
-        jstring libPath
+        jclass clazz,
+        jstring libPath,
+        jobject cacheDir
 ) {
     const char* path = env->GetStringUTFChars(libPath, nullptr);
 
@@ -105,32 +90,9 @@ Java_org_levimc_launcher_core_minecraft_MinecraftActivity_nativeOnLauncherLoaded
     }
     env->ReleaseStringUTFChars(libPath, path);
     if (!g_modsInitialized && !g_modsDir.empty()) {
-        ModManager::LoadAndInitializeEnabledMods(g_modsDir, g_cacheDir, g_vm);
+        ModManager::LoadAndInitializeEnabledMods(g_modsDir, AndroidUtils::GetAbsolutePath(env, cacheDir), g_vm);
         g_modsInitialized = true;
         logger.debug("Mods initialized successfully");
     }
 }
-
-JNIEXPORT void JNICALL
-Java_org_levimc_launcher_core_minecraft_MinecraftLauncher_nativeOnLauncherLoaded(
-        JNIEnv* env,
-        jobject thiz,
-        jstring libPath
-) {
-
-
-    Java_org_levimc_launcher_core_minecraft_MinecraftActivity_nativeOnLauncherLoaded(env, thiz, libPath);
-}
-
-JNIEXPORT void JNICALL
-Java_org_levimc_launcher_core_mods_ModNativeLoader_LoadMod(JNIEnv *env, jclass cls, jstring jStr, jint index) {
-    const char* libPath = env->GetStringUTFChars(jStr, nullptr);
-    if (libPath == nullptr || !g_vm) {
-        return;
-    }
-    
-    ModManager::LoadMod(g_vm, libPath, index);
-    env->ReleaseStringUTFChars(jStr, libPath);
-}
-
 }

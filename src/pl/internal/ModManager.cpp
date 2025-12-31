@@ -58,7 +58,7 @@ void ModManager::LoadAndInitializeEnabledMods(const std::string &modsDir,
     if (!IsModEnabled(configPath, libName))
       continue;
     fs::path destPath = fs::path(dataDir) / "mods" / entry.path().filename();
-    LoadMod(vm, destPath.c_str());
+    LoadMod(vm, destPath.c_str(), 0);
   }
 }
 
