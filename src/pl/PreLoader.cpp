@@ -10,7 +10,7 @@
 #include "internal/ModManager.h"
 #include "Logger.h"
 
-pl::log::Logger logger("NativeLoader");
+pl::log::Logger logger("Preloader");
 
 JavaVM *g_vm = nullptr;
 
