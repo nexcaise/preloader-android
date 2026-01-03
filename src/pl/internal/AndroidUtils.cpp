@@ -84,23 +84,22 @@ bool AndroidUtils::ReloadMinecraft(JNIEnv *env) {
 
     jclass activityCls = env->GetObjectClass(activity);
     if(!activityCls) return false;
-
+/*
     jmethodID get_intent = env->GetMethodID(activityCls, "getIntent", "()Landroid/content/Intent;");
     jobject intent = env->CallObjectMethod(activity, get_intent);
-    
+    */
     jclass cls = env->FindClass("org/levimc/launcher/core/minecraft/MinecraftActivity");
     if (!cls) return false;
 
     jmethodID pmid = env->GetMethodID(cls, "onPause", "()V");
 
-    env->CallVoidMethod(cls, pmid, intent);
+    env->CallVoidMethod(cls, pmid);
 
     jmethodID rmid = env->GetMethodID(cls, "onResume", "()V");
 
-    env->CallVoidMethod(cls, rmid, intent);
+    env->CallVoidMethod(cls, rmid);
     
     env->DeleteLocalRef(cls);
-    env->DeleteLocalRef(intent);
     env->DeleteLocalRef(activityCls);
 
     return true;
