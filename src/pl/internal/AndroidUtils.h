@@ -10,7 +10,7 @@ namespace AndroidUtils {
 jobject GetGlobalContext(JNIEnv *env);
 std::string GetAbsolutePath(JNIEnv *env, jobject fileObj);
 jobject getCurrentActivity(JNIEnv *env);
-bool AndroidUtils::ReloadMinecraft(JNIEnv *env);
+bool ReloadMinecraft(JNIEnv *env);
 std::string GetSelectedModsDir(JNIEnv *env, jobject context);
 AndroidContextPaths FetchContextPaths(JNIEnv *env);
 } // namespace AndroidUtils
