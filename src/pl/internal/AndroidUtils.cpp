@@ -95,8 +95,8 @@ bool AndroidUtils::ReloadMinecraft(JNIEnv *env) {
 
     env->CallVoidMethod(cls, mid, intent);
 
+    env->DeleteLocalRef(cls);
     env->DeleteLocalRef(intent);
-    env->DeleteLocalRef(intentCls);
     env->DeleteLocalRef(activityCls);
 
     return true;
