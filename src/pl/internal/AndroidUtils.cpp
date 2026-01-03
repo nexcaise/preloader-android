@@ -78,6 +78,25 @@ jobject AndroidUtils::getCurrentActivity(JNIEnv *env) {
     return globalAct;
 }
 
+bool AndroidUtils::ReloadMinecraft(JNIEnv *env) {
+    jobject activity = getCurrentActivity(env);
+    if (!activity) return false;
+
+    jclass activityCls = env->GetObjectClass(activity);
+    jmethodID mid = env->GetMethodID(activityCls, "onNewIntent", "(Landroid/content/Intent;)V");
+    jclass intentCls = env->FindClass("android/content/Intent");
+    jmethodID intentCtor = env->GetMethodID(intentCls, "<init>", "()V");
+    jobject intent = env->NewObject(intentCls, intentCtor);
+
+    env->CallVoidMethod(activity, mid, intent);
+
+    env->DeleteLocalRef(intent);
+    env->DeleteLocalRef(intentCls);
+    env->DeleteLocalRef(activityCls);
+
+    return true;
+}
+
 std::string AndroidUtils::GetSelectedModsDir(JNIEnv *env, jobject context) {
   jclass versionManagerClass =
       env->FindClass("org/levimc/launcher/core/versions/VersionManager");
@@ -118,13 +137,6 @@ AndroidContextPaths AndroidUtils::FetchContextPaths(JNIEnv *env) {
   if (cacheDir) {
     paths.cacheDir = GetAbsolutePath(env, cacheDir);
     env->DeleteLocalRef(cacheDir);
-  }
-
-  jmethodID get_external_files_dir = env->GetMethodID(contextClass, "getDataDir", "()Ljava/io/File;");
-  jobject externalFilesDir = env->CallObjectMethod(appContext, get_external_files_dir);
-  if (externalFilesDir) {
-    paths.externalFilesDir = GetAbsolutePath(env, externalFilesDir);
-    env->DeleteLocalRef(externalFilesDir);
   }
 
   paths.modsDir = GetSelectedModsDir(env, appContext);

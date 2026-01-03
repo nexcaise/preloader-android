@@ -16,7 +16,6 @@ JavaVM *g_vm = nullptr;
 
 static std::string g_modsDir;
 static std::string g_cacheDir;
-static std::string g_externalFilesDir;
 static bool g_modsInitialized = false;
 static bool g_isLoaded = false;
 
@@ -57,7 +56,6 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     auto paths = AndroidUtils::FetchContextPaths(env);
     g_modsDir = paths.modsDir;
     g_cacheDir = paths.cacheDir;
-    g_externalFilesDir = paths.externalFilesDir;
     g_isLoaded = true;
 
     return JNI_VERSION_1_4;

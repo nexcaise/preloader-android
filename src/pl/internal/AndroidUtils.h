@@ -4,13 +4,13 @@
 struct AndroidContextPaths {
   std::string cacheDir;
   std::string modsDir;
-  std::string externalFilesDir;
 };
 
 namespace AndroidUtils {
 jobject GetGlobalContext(JNIEnv *env);
 std::string GetAbsolutePath(JNIEnv *env, jobject fileObj);
 jobject getCurrentActivity(JNIEnv *env);
+bool AndroidUtils::ReloadMinecraft(JNIEnv *env);
 std::string GetSelectedModsDir(JNIEnv *env, jobject context);
 AndroidContextPaths FetchContextPaths(JNIEnv *env);
 } // namespace AndroidUtils
