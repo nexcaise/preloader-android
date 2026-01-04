@@ -47,7 +47,7 @@ std::string AndroidUtils::GetAbsolutePath(JNIEnv *env, jobject file) {
   return result;
 }
 
-jobject AndroidUtils::getCurrentActivity(JNIEnv *env) {
+jobject AndroidUtils::getMCActivity(JNIEnv *env) {
     jclass cls = env->FindClass(
         "org/levimc/launcher/core/minecraft/MinecraftActivityState"
     );
@@ -55,8 +55,8 @@ jobject AndroidUtils::getCurrentActivity(JNIEnv *env) {
 
     jmethodID mid = env->GetStaticMethodID(
         cls,
-        "getCurrentActivity",
-        "()Landroid/app/Activity;"
+        "getMCActivity",
+        "()Lorg/levimc/launcher/core/minecraft/MinecraftActivity;"
     );
     if (!mid) {
         env->DeleteLocalRef(cls);
@@ -78,27 +78,20 @@ jobject AndroidUtils::getCurrentActivity(JNIEnv *env) {
     return globalAct;
 }
 
-bool AndroidUtils::ReloadMinecraft(JNIEnv *env) {
-    jobject activity = getCurrentActivity(env);
-    if (!activity) return false;
-
-    jclass activityCls = env->GetObjectClass(activity);
-    if(!activityCls) return false;
+void AndroidUtils::ReloadMinecraft(JNIEnv *env) {
+    jobject activity = getMCActivity(env);
+    if (!activity) return;
 /*
-    jmethodID get_intent = env->GetMethodID(activityCls, "getIntent", "()Landroid/content/Intent;");
-    jobject intent = env->CallObjectMethod(activity, get_intent);
-*/
-    jclass cls = env->FindClass("org/levimc/launcher/core/minecraft/MinecraftActivity");
-    if (!cls) return false;
+    jclass cls = env->GetObjectClass(activity);
+    if(!cls) return false;*/
 
-    jmethodID mid = env->GetMethodID(cls, "recreate", "()V");
+    jmethodID mid = env->GetMethodID(activityCls, "quit", "()V");
+    //env->CallObjectMethod(activity, mid);
 
-    env->CallVoidMethod(cls, mid);
+    env->CallVoidMethod(activity, mid);
 
-    env->DeleteLocalRef(cls);
-    env->DeleteLocalRef(activityCls);
-
-    return true;
+    //env->DeleteLocalRef(cls);
+    env->DeleteLocalRef(activity);
 }
 
 std::string AndroidUtils::GetSelectedModsDir(JNIEnv *env, jobject context) {
