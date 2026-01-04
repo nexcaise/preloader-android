@@ -78,22 +78,6 @@ jobject AndroidUtils::getMCActivity(JNIEnv *env) {
     return globalAct;
 }
 
-void AndroidUtils::ReloadMinecraft(JNIEnv *env) {
-    jobject activity = getMCActivity(env);
-    if (!activity) return;
-
-    jclass cls = env->GetObjectClass(activity);
-    if(!cls) return false;
-
-    jmethodID mid = env->GetMethodID(cls, "quit", "()V");
-    //env->CallObjectMethod(activity, mid);
-
-    env->CallVoidMethod(activity, mid);
-
-    //env->DeleteLocalRef(cls);
-    env->DeleteLocalRef(activity);
-}
-
 std::string AndroidUtils::GetSelectedModsDir(JNIEnv *env, jobject context) {
   jclass versionManagerClass =
       env->FindClass("org/levimc/launcher/core/versions/VersionManager");
