@@ -92,7 +92,7 @@ void AndroidUtils::reloadMinecraft(JNIEnv *env) {
         env->CallVoidMethod(activity, onPause);
     }
     
-    sleep(3);
+   // sleep(3);
     
     jmethodID onResume = env->GetMethodID(cls, "onResume", "()V");
     if (onResume) {
