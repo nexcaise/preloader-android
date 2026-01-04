@@ -81,11 +81,11 @@ jobject AndroidUtils::getMCActivity(JNIEnv *env) {
 void AndroidUtils::ReloadMinecraft(JNIEnv *env) {
     jobject activity = getMCActivity(env);
     if (!activity) return;
-/*
-    jclass cls = env->GetObjectClass(activity);
-    if(!cls) return false;*/
 
-    jmethodID mid = env->GetMethodID(activityCls, "quit", "()V");
+    jclass cls = env->GetObjectClass(activity);
+    if(!cls) return false;
+
+    jmethodID mid = env->GetMethodID(cls, "quit", "()V");
     //env->CallObjectMethod(activity, mid);
 
     env->CallVoidMethod(activity, mid);
