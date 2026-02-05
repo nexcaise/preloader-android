@@ -29,14 +29,15 @@ jobs:
 
       - name: Configure xmake (Android arm64)
         run: |
-          xmake f -p android \
+          xmake f -y -p android \
             -a arm64-v8a \
             --ndk=$ANDROID_NDK_HOME \
             --ndk_sdkver=26 \
             -m release
 
       - name: Build (.a + .so)
-        run: xmake -j$(nproc)
+        run: |
+          xmake -y -j$(nproc)
 
       - name: Upload libpreloader.a
         uses: actions/upload-artifact@v4
