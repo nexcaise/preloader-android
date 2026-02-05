@@ -1,0 +1,51 @@
+name: Build
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build-arm64:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r27b
+
+      - name: Set up xmake
+        uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: latest
+
+      - name: Configure xmake (Android arm64)
+        run: |
+          xmake f -p android \
+            -a arm64-v8a \
+            --ndk=$ANDROID_NDK_HOME \
+            --ndk_sdkver=26 \
+            -m release
+
+      - name: Build (.a + .so)
+        run: xmake -j$(nproc)
+
+      - name: Upload libpreloader.a
+        uses: actions/upload-artifact@v4
+        with:
+          name: preloader-arm64-static
+          path: build/android/arm64-v8a/release/libpreloader.a
+
+      - name: Upload libpreloader.so
+        uses: actions/upload-artifact@v4
+        with:
+          name: preloader-arm64-shared
+          path: build/android/arm64-v8a/release/libpreloader.so
